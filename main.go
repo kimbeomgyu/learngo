@@ -1,28 +1,45 @@
 package main
 
 import (
-	"os"
-	"strings"
+	"fmt"
+	"io/ioutil"
+	"net/http"
 
 	"github.com/labstack/echo"
-	"github.com/myProject/learngo/scrapper"
+	"github.com/labstack/echo/middleware"
+	"github.com/myProject/learngo/checker"
 )
 
-const filename string = "jobs.csv"
+func main() {
+	// Echo instance
+	e := echo.New()
+
+	// Middleware
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+
+	// Route => handler
+	e.GET("/", handleHome)
+	e.GET("/profile/:user", handleProfile)
+
+	// Start server
+	e.Logger.Fatal(e.Start(":3000"))
+}
 
 func handleHome(c echo.Context) error {
-	return c.File("home.html")
-}
-func handleScrape(c echo.Context) error {
-	defer os.Remove(filename)
-	term := strings.ToLower(scrapper.CleanString(c.FormValue("term")))
-	scrapper.Scrape(term)
-	return c.Attachment(filename, filename)
+	return c.File("index.html")
 }
 
-func main() {
-	e := echo.New()
-	e.GET("/", handleHome)
-	e.POST("/scrape", handleScrape)
-	e.Logger.Fatal(e.Start(":3000"))
+func handleProfile(c echo.Context) error {
+	url := "https://api.github.com/users/" + c.Param("user")
+	res, err := http.Get(url)
+	checker.CheckErr(err)
+	checker.CheckStatusCode(res)
+
+	defer res.Body.Close()
+
+	body, bodyErr := ioutil.ReadAll(res.Body)
+	checker.CheckErr(bodyErr)
+	fmt.Println(string(body))
+	return c.String(res.StatusCode, string(body))
 }
