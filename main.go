@@ -1,45 +1,34 @@
 package main
 
-import (
-	"fmt"
-	"io/ioutil"
-	"net/http"
+import "fmt"
 
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
-	"github.com/myProject/learngo/checker"
-)
+// Student is 학생이다
+type Student struct {
+	name  string
+	class int
+
+	sungjuk Sungjuk
+}
+
+// Sungjuk is 학생의 성적이다
+type Sungjuk struct {
+	name  string
+	grade string
+}
+
+// ViewSungjuk is 성적을 출력한다
+func (s Student) ViewSungjuk() {
+	fmt.Println(s.sungjuk)
+}
 
 func main() {
-	// Echo instance
-	e := echo.New()
+	var s Student
 
-	// Middleware
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
+	s.name = "Smith"
+	s.class = 1
 
-	// Route => handler
-	e.GET("/", handleHome)
-	e.GET("/profile/:user", handleProfile)
+	s.sungjuk.name = "수학"
+	s.sungjuk.grade = "C"
 
-	// Start server
-	e.Logger.Fatal(e.Start(":3000"))
-}
-
-func handleHome(c echo.Context) error {
-	return c.File("index.html")
-}
-
-func handleProfile(c echo.Context) error {
-	url := "https://api.github.com/users/" + c.Param("user")
-	res, err := http.Get(url)
-	checker.CheckErr(err)
-	checker.CheckStatusCode(res)
-
-	defer res.Body.Close()
-
-	body, bodyErr := ioutil.ReadAll(res.Body)
-	checker.CheckErr(bodyErr)
-	fmt.Println(string(body))
-	return c.String(res.StatusCode, string(body))
+	s.ViewSungjuk()
 }
