@@ -17,6 +17,107 @@ import "fmt"
 */
 
 func main() {
+	slice()
+	sliceCapacity()
+	sliceCopy()
+	sliceRef()
+	sliceRemove() // slice는 복사가 아니기 때문에 주의해야 한다!
+
+}
+
+func sliceRemove() {
+	a := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+
+	for i := 0; i < 5; i++ {
+		var back int
+		a, back = removeBack(a)
+		fmt.Printf("%d, ", back)
+	}
+	fmt.Println()
+	fmt.Println(a)
+
+	b := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	for i := 0; i < 5; i++ {
+		var front int
+		b, front = removeFront(b)
+		fmt.Printf("%d, ", front)
+	}
+	fmt.Println()
+	fmt.Println(b)
+}
+func removeBack(a []int) ([]int, int) {
+	return a[:len(a)-1], a[len(a)-1]
+}
+
+func removeFront(a []int) ([]int, int) {
+	return a[1:], a[0]
+}
+
+/*
+	이름에서 알 수 있듯이 잘라내서 사용한다.
+	잘라낸 부분은 새로운 값이 아닌 주소값에서 잘라서 같은 곳을 바라보는 상태이다!
+	같은 메모리 영역을 가리키고 있다.
+*/
+func sliceRef() {
+	a := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+
+	b := a[4:8]
+	c := a[4:]
+	d := a[:4]
+
+	c[0] = 2
+	d[2] = 4
+
+	fmt.Printf("%p %d\n", a, a)
+	fmt.Printf("%p %d\n", b, b)
+	fmt.Printf("%p %d\n", c, c)
+	fmt.Printf("%p %d\n", d, d)
+}
+
+// 공간을 다르게 쓰고싶은게 확실한 경우
+func sliceCopy() {
+	a := []int{1, 2}
+
+	b := make([]int, len(a))
+
+	for i := 0; i < len(a); i++ {
+		b[i] = a[i]
+
+	}
+
+	b = append(a, 3)
+
+	fmt.Printf("%p %p\n", a, b)
+
+	b[0] = 4
+	b[1] = 5
+
+	fmt.Println(a)
+	fmt.Println(b)
+}
+
+func sliceCapacity() {
+	// 이 부분에서 capacity가 있기 때문에 a와 b가 동일한 주소값으로 연결되어 있다.
+	// 만약 capacity가 없다면 새로운 주소로 값이 복사되어 a와 b가 달라진다.
+	a := make([]int, 2, 4)
+	a[0] = 1
+	a[1] = 2
+
+	b := append(a, 3)
+
+	fmt.Printf("%p %p\n", a, b)
+
+	fmt.Println(a)
+	fmt.Println(b)
+
+	b[0] = 4
+	b[1] = 5
+
+	fmt.Println(a)
+	fmt.Println(b)
+}
+
+func slice() {
 	var a []int
 	b := make([]int, 0, 8) // 배열을 생성할 때 초기 값을 아무것도 주지 않고, 공간을 8만큼 확보해둔다.
 	a = append(a, 1)
@@ -28,42 +129,4 @@ func main() {
 	fmt.Printf("len(b) = %d\n", len(b))
 	fmt.Printf("cap(b) = %d\n", cap(b))
 
-	// 이 부분에서 capacity가 있기 때문에 c와 d가 동일한 주소값으로 연결되어 있다.
-	// 만약 capacity가 없다면 새로운 주소로 값이 복사되어 c와 d가 달라진다.
-	c := make([]int, 2, 4)
-	c[0] = 1
-	c[1] = 2
-
-	d := append(c, 3)
-
-	fmt.Printf("%p %p\n", c, d)
-
-	fmt.Println(c)
-	fmt.Println(d)
-
-	d[0] = 4
-	d[1] = 5
-
-	fmt.Println(c)
-	fmt.Println(d)
-
-	// 공간을 다르게 쓰고싶은게 확실한 경우
-	e := []int{1, 2}
-
-	f := make([]int, len(e))
-
-	for i := 0; i < len(e); i++ {
-		f[i] = e[i]
-
-	}
-
-	f = append(e, 3)
-
-	fmt.Printf("%p %p\n", e, f)
-
-	f[0] = 4
-	f[1] = 5
-
-	fmt.Println(e)
-	fmt.Println(f)
 }
