@@ -44,28 +44,32 @@ type Account struct {
 
 // Withdraw is Withdraw
 func (a *Account) Withdraw(val int) {
+	a.mutex.Lock()
 	a.balance -= val
+	a.mutex.Unlock()
 }
 
 // Deposit is Deposit
 func (a *Account) Deposit(val int) {
+	a.mutex.Lock()
 	a.balance += val
+	a.mutex.Unlock()
 }
 
 // Balance is Balance
 func (a *Account) Balance() int {
+	a.mutex.Lock()
 	balance := a.balance
+	a.mutex.Unlock()
 	return balance
 }
 
 var accounts []*Account
-var globalLock *sync.Mutex
 
 func transfer(sender, receiver int, money int) {
-	globalLock.Lock()
 	accounts[sender].Withdraw(money)
 	accounts[receiver].Deposit(money)
-	globalLock.Unlock()
+
 	fmt.Println("Transfer,", sender, receiver, money)
 }
 
@@ -115,7 +119,6 @@ func main() {
 		accounts = append(accounts, &Account{balance: 1000, mutex: &sync.Mutex{}})
 	}
 
-	globalLock = &sync.Mutex{}
 	go func() {
 		for {
 			transfer(0, 1, 100)
