@@ -8,10 +8,36 @@ type Node struct {
 	val  int
 }
 
-func addNode(tail *Node, val int) *Node {
+// AddNode is O(1)
+func AddNode(tail *Node, val int) *Node {
 	node := &Node{val: val}
 	tail.next = node
 	return node
+}
+
+// RemoveNode is O(N)
+func RemoveNode(node *Node, root *Node, tail *Node) (*Node, *Node) {
+	if node == root {
+		root = root.next
+		if root == nil {
+			tail = nil
+		}
+		return root, tail
+	}
+
+	prev := root
+	for prev.next != node {
+		prev = prev.next
+	}
+
+	if node == tail {
+		prev.next = nil
+		tail = prev
+	} else {
+		prev.next = prev.next.next
+	}
+
+	return root, tail
 }
 
 func main() {
@@ -22,9 +48,29 @@ func main() {
 	tail = root
 
 	for i := 1; i < 10; i++ {
-		tail = addNode(tail, i)
+		tail = AddNode(tail, i)
 	}
 
+	printNodes(root)
+
+	root, tail = RemoveNode(root.next, root, tail)
+
+	printNodes(root)
+
+	root, tail = RemoveNode(root, root, tail)
+
+	printNodes(root)
+
+	root, tail = RemoveNode(tail, root, tail)
+
+	printNodes(root)
+
+	root, tail = RemoveNode(tail, root, tail)
+
+	printNodes(root)
+}
+
+func printNodes(root *Node) {
 	node := root
 	for node.next != nil {
 		fmt.Printf("%d -> ", node.val)
@@ -32,5 +78,6 @@ func main() {
 	}
 
 	fmt.Println(node.val)
-
+	fmt.Println("root: ", root.val)
+	fmt.Println("tail: ", node.val)
 }
