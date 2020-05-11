@@ -8,26 +8,21 @@ type Node struct {
 	val  int
 }
 
-func addNode(root *Node, val int) {
-	var tail *Node
-	tail = root
-
-	for tail.next != nil {
-		tail = tail.next
-	}
-
+func addNode(tail *Node, val int) *Node {
 	node := &Node{val: val}
 	tail.next = node
-
+	return node
 }
 
 func main() {
 	var root *Node
+	var tail *Node
 
 	root = &Node{val: 0}
+	tail = root
 
 	for i := 1; i < 10; i++ {
-		addNode(root, i)
+		tail = addNode(tail, i)
 	}
 
 	node := root
