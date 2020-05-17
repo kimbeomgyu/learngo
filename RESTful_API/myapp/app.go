@@ -117,7 +117,19 @@ func updateUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func usersHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Get UserInfo by /users/{id}")
+	if len(userMap) == 0 {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, "No Users")
+		return
+	}
+	users := []*User{}
+	for _, u := range userMap {
+		users = append(users, u)
+	}
+	data, _ := json.Marshal(users)
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, string(data))
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -133,6 +145,7 @@ func NewHandler() http.Handler {
 	mux.HandleFunc("/", indexHandler)
 	mux.HandleFunc("/users", usersHandler).Methods("GET")
 	mux.HandleFunc("/users", createUserHandler).Methods("POST")
+	mux.HandleFunc("/users", updateUserHandler).Methods("PUT")
 	mux.HandleFunc("/users/{id:[0-9]+}", getUserInfoHandler).Methods("GET")
 	mux.HandleFunc("/users/{id:[0-9]+}", deleteUserHandler).Methods("DELETE")
 	return mux
