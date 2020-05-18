@@ -15,10 +15,10 @@ type User struct {
 func main() {
 	user := User{Name: "tucker", Email: "tucker@naver.com", Age: 23}
 	user2 := User{Name: "jason", Email: "jason@naver.com", Age: 18}
-	temp1, err := template.New("Tmp1").Parse("Name: {{.Name}}\nEmail: {{.Email}}\nAge: {{.Age}}\n")
+	temp1, err := template.New("Tmp1").ParseFiles("templates/tmpl1.tmpl")
 	if err != nil {
 		panic(err)
 	}
-	temp1.Execute(os.Stdout, user)
-	temp1.Execute(os.Stdout, user2)
+	temp1.ExecuteTemplate(os.Stdout, "tmpl1.tmpl", user)
+	temp1.ExecuteTemplate(os.Stdout, "tmpl1.tmpl", user2)
 }
