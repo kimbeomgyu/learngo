@@ -1,9 +1,14 @@
 package main
 
 import (
-	"html/template"
+	"html/template" // "text/template"
 	"os"
 )
+
+// IsOld is age > 20
+func (u User) IsOld() bool {
+	return u.Age > 20
+}
 
 // User is user
 type User struct {

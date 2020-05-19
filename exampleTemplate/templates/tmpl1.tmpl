@@ -1,3 +1,14 @@
 Name: {{.Name}}
 Email: {{.Email}}
+{{if .IsOld -}} 
+OldAge: {{.Age}}
+{{else -}}
 Age: {{.Age}}
+{{- end}}
+
+<a href="/user?email={{.Email}}">user</a>
+<script>
+var email={{.Email}}
+var name={{.Name}}
+var age={{.Age}}
+</script>
