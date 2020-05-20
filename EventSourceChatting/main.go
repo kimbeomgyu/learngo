@@ -12,6 +12,7 @@ import (
 	"github.com/urfave/negroni"
 )
 
+// Message is message struct
 type Message struct {
 	Name string `json:"name"`
 	Msg  string `json:"msg"`
