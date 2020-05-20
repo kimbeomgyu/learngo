@@ -1,6 +1,6 @@
 (function () {
   if (!window.EventSource) {
-    alert("No EventSourc!");
+    alert("No EventSource!");
     return;
   }
 
