@@ -20,7 +20,8 @@ type dbHandler interface {
 var handler dbHandler
 
 func init() {
-	handler = newMemoryHandler()
+	// handler = newMemoryHandler()
+	handler = newSqliteHandler()
 }
 
 // GetTodos is get todo list
