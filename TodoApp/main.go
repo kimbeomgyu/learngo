@@ -9,7 +9,8 @@ import (
 )
 
 func main() {
-	m := app.MakeHandler()
+	m := app.MakeHandler("./TodoApp.db")
+	defer m.Close()
 	n := negroni.Classic()
 	n.UseHandler(m)
 
