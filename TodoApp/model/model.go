@@ -10,9 +10,10 @@ type Todo struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+// DBHandler is DB Handler
 type DBHandler interface {
-	GetTodos() []*Todo
-	AddTodo(name string) *Todo
+	GetTodos(sessionID string) []*Todo
+	AddTodo(sessionID string, name string) *Todo
 	RemoveTodo(id int) bool
 	CompleteTodo(id int, complete bool) bool
 	Close()
@@ -20,6 +21,7 @@ type DBHandler interface {
 
 var handler DBHandler
 
+// NewDBHandler is New DB Handler
 func NewDBHandler(filepath string) DBHandler {
 	// handler = newMemoryHandler()
 	return newSqliteHandler(filepath)
