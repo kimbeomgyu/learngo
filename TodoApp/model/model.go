@@ -22,7 +22,8 @@ type DBHandler interface {
 var handler DBHandler
 
 // NewDBHandler is New DB Handler
-func NewDBHandler(filepath string) DBHandler {
+func NewDBHandler(dbConn string) DBHandler {
 	// handler = newMemoryHandler()
-	return newSqliteHandler(filepath)
+	// return newSqliteHandler(filepath)
+	return newPQHandler(dbConn)
 }

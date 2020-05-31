@@ -3,13 +3,13 @@ package app
 import (
 	"encoding/json"
 	"fmt"
-	"learngo/TodoApp/model"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"os"
 	"strconv"
 	"testing"
+	"todos/model"
 
 	"github.com/stretchr/testify/assert"
 )
