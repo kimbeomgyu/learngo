@@ -1,24 +1,20 @@
 package app
 
 import (
-	"learngo/TodoApp/model"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
+	"todos/model"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
-	"github.com/joho/godotenv"
 	"github.com/unrolled/render"
 	"github.com/urfave/negroni"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
 )
 
 var rd *render.Render = render.New()
-var store *sessions.CookieStore
+var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 
 // AHandler is AHandler
 type AHandler struct {
@@ -113,7 +109,7 @@ func CheckSignin(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) 
 }
 
 // MakeHandler is app handler
-func MakeHandler(filepath string) *AHandler {
+func MakeHandler(dbConn string) *AHandler {
 	r := mux.NewRouter()
 	n := negroni.New(
 		negroni.NewRecovery(),
@@ -126,20 +122,7 @@ func MakeHandler(filepath string) *AHandler {
 
 	a := &AHandler{
 		Handler: n,
-		db:      model.NewDBHandler(filepath),
-	}
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
-	googleOauthConfig = oauth2.Config{
-		RedirectURL:  "http://localhost:3000/auth/google/callback",
-		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
-		ClientSecret: os.Getenv("GOOGLE_SECRET_KEY"),
-		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
-		Endpoint:     google.Endpoint,
+		db:      model.NewDBHandler(dbConn),
 	}
 
 	r.HandleFunc("/todos", a.getTodoListHandler).Methods("GET")

@@ -9,9 +9,11 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 // GoogleUserID is Login User ID
@@ -24,7 +26,13 @@ type GoogleUserID struct {
 
 const oauthGoogleURLAPI = "https://www.googleapis.com/oauth2/v2/userinfo?access_token="
 
-var googleOauthConfig oauth2.Config
+var googleOauthConfig = oauth2.Config{
+	RedirectURL:  os.Getenv("DOMAIN_NAME") + "auth/google/callback",
+	ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
+	ClientSecret: os.Getenv("GOOGLE_SECRET_KEY"),
+	Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
+	Endpoint:     google.Endpoint,
+}
 
 func generateStateOauthCookie(w http.ResponseWriter) string {
 	expiration := time.Now().Add(1 * 24 * time.Hour) // 하루 뒤에 만료

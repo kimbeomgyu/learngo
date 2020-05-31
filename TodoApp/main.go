@@ -7,11 +7,11 @@ import (
 )
 
 func main() {
-	m := app.MakeHandler("./TodoApp.db")
+	m := app.MakeHandler(os.Getenv("DATABASE_URL"))
 	defer m.Close()
 
 	log.Println("Started App")
-	err := http.ListenAndServe(":3000", m)
+	err := http.ListenAndServe(":"+os.Getenv("PORT"), m)
 	if err != nil {
 		panic(err)
 	}
