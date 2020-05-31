@@ -8,76 +8,77 @@ type Node struct {
 	val  int
 }
 
+type LinkedList struct {
+	root *Node
+	tail *Node
+}
+
 // AddNode is O(1)
-func AddNode(tail *Node, val int) *Node {
-	node := &Node{val: val}
-	tail.next = node
-	return node
+func (l *LinkedList) AddNode(val int) {
+	if l.root == nil {
+		l.root = &Node{val: val}
+		l.tail = l.root
+		return
+	}
+	l.tail.next = &Node{val: val}
+	l.tail = l.tail.next
 }
 
 // RemoveNode is O(N)
-func RemoveNode(node *Node, root *Node, tail *Node) (*Node, *Node) {
-	if node == root {
-		root = root.next
-		if root == nil {
-			tail = nil
-		}
-		return root, tail
+func (l *LinkedList) RemoveNode(node *Node) {
+	if node == l.root {
+		l.root = l.root.next
+		node.next = nil
+		return
 	}
 
-	prev := root
+	prev := l.root
 	for prev.next != node {
 		prev = prev.next
 	}
 
-	if node == tail {
+	if node == l.tail {
 		prev.next = nil
-		tail = prev
+		l.tail = prev
 	} else {
 		prev.next = prev.next.next
 	}
-
-	return root, tail
+	node.next = nil
 }
 
 func main() {
-	var root *Node
-	var tail *Node
-
-	root = &Node{val: 0}
-	tail = root
+	list := &LinkedList{}
+	list.AddNode(0)
 
 	for i := 1; i < 10; i++ {
-		tail = AddNode(tail, i)
+		list.AddNode(i)
 	}
 
-	printNodes(root)
+	list.printNodes()
 
-	root, tail = RemoveNode(root.next, root, tail)
+	list.RemoveNode(list.root.next)
 
-	printNodes(root)
+	list.printNodes()
 
-	root, tail = RemoveNode(root, root, tail)
+	list.RemoveNode(list.root)
 
-	printNodes(root)
+	list.printNodes()
 
-	root, tail = RemoveNode(tail, root, tail)
+	list.RemoveNode(list.tail)
 
-	printNodes(root)
+	list.printNodes()
 
-	root, tail = RemoveNode(tail, root, tail)
+	list.RemoveNode(list.root.next.next)
 
-	printNodes(root)
+	list.printNodes()
 }
 
-func printNodes(root *Node) {
-	node := root
+func (l *LinkedList) printNodes() {
+	node := l.root
 	for node.next != nil {
 		fmt.Printf("%d -> ", node.val)
 		node = node.next
 	}
 
 	fmt.Println(node.val)
-	fmt.Println("root: ", root.val)
-	fmt.Println("tail: ", node.val)
 }
