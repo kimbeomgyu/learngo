@@ -5,6 +5,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/hajimehoshi/ebiten/inpututil"
 )
 
 // GimulType is Gimul Type
@@ -37,12 +38,33 @@ const (
 )
 
 var (
-	board     [BoardWidth][BoardHeight]GimulType
-	bgimg     *ebiten.Image
-	gimulImgs [GimulTypeMax]*ebiten.Image
+	board       [BoardWidth][BoardHeight]GimulType
+	bgimg       *ebiten.Image
+	gimulImgs   [GimulTypeMax]*ebiten.Image
+	selectedImg *ebiten.Image
+	selected    bool
+	selectedX   int
+	selectedY   int
 )
 
 func update(screen *ebiten.Image) error {
+	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
+		x, y := ebiten.CursorPosition()
+		i, j := x/GridWidth, y/GridHeight
+		if selected {
+			if i == selectedX && j == selectedY {
+				selected = false
+			} else {
+				move(selectedX, selectedY, i, j)
+			}
+		} else {
+			if board[i][j] != GimulTypeNone {
+				selected = true
+				selectedX, selectedY = i, j
+			}
+		}
+	}
+
 	screen.DrawImage(bgimg, nil)
 
 	for i := 0; i < BoardWidth; i++ {
@@ -79,7 +101,50 @@ func update(screen *ebiten.Image) error {
 			}
 		}
 	}
+
+	if selected {
+		options := &ebiten.DrawImageOptions{}
+		options.GeoM.Translate(float64(GimulStartX+GridWidth*selectedX), float64(GimulStartY+GridHeight*selectedY))
+
+		screen.DrawImage(selectedImg, options)
+	}
 	return nil
+}
+
+func move(prevX, prevY, tarX, tarY int) {
+	if isMovable(prevX, prevY, tarX, tarY) {
+		board[prevX][prevY], board[tarX][tarY] = GimulTypeNone, board[prevX][prevY]
+		selected = false
+	}
+}
+
+func abs(a int) int {
+	if a < 0 {
+		return -a
+	}
+	return a
+}
+
+func isMovable(prevX, prevY, tarX, tarY int) bool {
+	if tarX < 0 || tarY < 0 {
+		return false
+	}
+
+	if tarX >= BoardWidth || tarY >= BoardHeight {
+		return false
+	}
+
+	switch board[prevX][prevY] {
+	case GimulTypeGreenJa, GimulTypeRedJa:
+		return prevX+1 == tarX && prevY == tarY
+	case GimulTypeGreenSang, GimulTypeRedSang:
+		return abs(prevX-tarX) == 1 && abs(prevY-tarY) == 1
+	case GimulTypeGreenJang, GimulTypeRedJang:
+		return abs(prevX-tarX)+abs(prevY-tarY) == 1
+	case GimulTypeGreenWang, GimulTypeRedWang:
+		return abs(prevX-tarX) == 1 || abs(prevY-tarY) == 1
+	}
+	return false
 }
 
 func main() {
@@ -133,6 +198,12 @@ func main() {
 	}
 
 	gimulImgs[GimulTypeRedSang], _, err = ebitenutil.NewImageFromFile("./images/red_sang.png", ebiten.FilterDefault)
+
+	if err != nil {
+		log.Fatalf("read file error: %v", err)
+	}
+
+	selectedImg, _, err = ebitenutil.NewImageFromFile("./images/selected.png", ebiten.FilterDefault)
 
 	if err != nil {
 		log.Fatalf("read file error: %v", err)
