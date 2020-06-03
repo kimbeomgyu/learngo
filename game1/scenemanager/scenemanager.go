@@ -5,6 +5,7 @@ import "github.com/hajimehoshi/ebiten"
 // Scene is Scene
 type Scene interface {
 	Update(*ebiten.Image) error
+	Startup()
 }
 
 type scenemanager struct {
@@ -28,4 +29,5 @@ func Update(screen *ebiten.Image) error {
 // SetScene is scenemanager setting scene
 func SetScene(scene Scene) {
 	manager.currentScene = scene
+	scene.Startup()
 }
