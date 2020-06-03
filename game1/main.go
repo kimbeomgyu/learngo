@@ -1,6 +1,8 @@
 package main
 
 import (
+	"learngo/game1/scenemanager"
+	"learngo/game1/scenes"
 	"log"
 
 	"github.com/hajimehoshi/ebiten"
@@ -276,7 +278,9 @@ func main() {
 	board[3][2] = GimulRedJang
 	board[2][1] = GimulRedJa
 
-	err = ebiten.Run(update, ScreenWidth, ScrrenHeight, 1.0, "12 Janggi")
+	scenemanager.SetScene(&scenes.StartScene{})
+
+	err = ebiten.Run(scenemanager.Update, ScreenWidth, ScrrenHeight, 1.0, "12 Janggi")
 
 	if err != nil {
 		log.Fatalf("Ebiten run error %v", err)
