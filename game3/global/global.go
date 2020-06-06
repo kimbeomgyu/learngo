@@ -18,4 +18,6 @@ const (
 	IdleY              = 0
 	IdleFrames         = 5
 	IdleAnimationSpeed = 12
+
+	BGScrollSpeed = 2
 )
